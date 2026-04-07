@@ -1,0 +1,33 @@
+# Binary Bloom: Ignore compiled executables
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# The "Secret Sauce": Never commit your actual secrets
+.env
+*.env
+config.yaml
+# (Unless it's a template like config.example.yaml)
+
+# Dependency Management
+vendor/
+# Note: Only ignore vendor/ if you aren't using 'go mod vendor' 
+# to check dependencies into your repo.
+
+# Testing and Coverage
+*.test
+*.out
+coverage.txt
+
+# IDE Specifics
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS Specifics
+.DS_Store
+thumbs.db
