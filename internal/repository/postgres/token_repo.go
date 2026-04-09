@@ -35,17 +35,19 @@ func (r *TokenRepo) Migrate() error {
 }
 
 func (r *TokenRepo) Create(ctx context.Context, token *domain.RefreshToken) error {
-	query := `
-	INSERT INTO refresh_tokens (id, user_id, token, expires_at)
-	VALUES (:id, :user_id, :token, :expires_at)`
-	_, err := r.db.NamedExecContext(ctx, query, token)
+	_, err := r.db.ExecContext(ctx,
+		`INSERT INTO refresh_tokens (id, user_id, token, expires_at)
+		 VALUES ($1, $2, $3, $4)`,
+		token.ID, token.UserID, token.Token, token.ExpiresAt,
+	)
 	return err
 }
 
 func (r *TokenRepo) FindByToken(ctx context.Context, token string) (*domain.RefreshToken, error) {
 	var t domain.RefreshToken
-	err := r.db.GetContext(ctx, &t,
-		`SELECT * FROM refresh_tokens WHERE token = $1`, token)
+	err := r.db.QueryRowxContext(ctx,
+		`SELECT id, user_id, token, expires_at, created_at
+		 FROM refresh_tokens WHERE token = $1`, token).StructScan(&t)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, domain.ErrInvalidToken
 	}
